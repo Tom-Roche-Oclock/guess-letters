@@ -1,6 +1,15 @@
 import { useEffect, useState } from 'react'
-import { Button } from '@nextui-org/react';
+import { Button, Card } from '@nextui-org/react';
 import './App.css'
+
+// data 
+const words = [
+  'chat',
+  'chien',
+  'panda',
+  'biche',
+  'ours',
+];
 
 // mélanger un tableau (simpliste)
 function shuffle(array) {
@@ -9,46 +18,70 @@ function shuffle(array) {
 }
 
 function App() {
-  const [word, setWord] = useState('CHAT'.split(''))
-  const [guessedWord, setGuessedWord] = useState([...word].fill('_', 0))
-  const [keyboard, setKeyboard] = useState(shuffle(word))
+  const [word, setWord] = useState([])
+  const [guessedWord, setGuessedWord] = useState([])
+  const [keyboard, setKeyboard] = useState([])
 
-  // à chaque changement de guessedWord
   useEffect(() => {
-    // vérifier si le mot est trouvé
-    if (guessedWord.join('') === word.join('')) {
-      console.log('Bravo !')
+    // random word depuis la data
+    const randomWord = words[Math.floor(Math.random() * words.length)].toUpperCase()
+
+    // définir les states
+    setWord(randomWord.split(''))
+    setGuessedWord([...randomWord].fill('_', 0))
+
+    // Chaque key du keyboard est un objet avec 2 propriétés
+    // Key { used: false, letter: 'A' }
+    setKeyboard(shuffle(randomWord.split('')).map((letter) => {
+      return {
+        used: false,
+        letter: letter
+      }
+    }))
+  }, [])
+
+  // condition de victoire
+  useEffect(() => {
+    // vérifier si guessWord est complet
+    if (!guessedWord.includes('_')) {
+      if (word.join('') === guessedWord.join('')) {
+        console.log('Gagné !')
+      } else {
+        console.log('Perdu !')
+      }
     }
+    
   }, [guessedWord])
 
-  // au clic sur un bouton lettre
-  const handleClick = (event) => {
-    if (event.target.disabled) {
-      return
-    }
-    // next ui place le contenu dans une span dans le bouton
-    // donc on récupere le contenu de la span
-    const letter = event.target.querySelector('span').textContent
+  const handleClick = (keyIndex) => {
+    // inserer la lettre dans le guessedWord à la place du prochain _
+    const newGuessedWord = [...guessedWord]
+    newGuessedWord[newGuessedWord.indexOf('_')] = keyboard[keyIndex].letter
+    setGuessedWord(newGuessedWord)
 
-    // remplacer le prochain _ par la lettre dans guessedWord
-    const index = guessedWord.indexOf('_')
-    guessedWord[index] = letter
-    setGuessedWord([...guessedWord])
-
-    // ajouter la propriété disabled au bouton
-    event.target.disabled = true
+    // définir used à true sur la key concernée
+    const newKeyboard = [...keyboard]
+    newKeyboard[keyIndex].used = true
+    setKeyboard(newKeyboard)
   }
 
   return (
     <div className="App">
       <div className="guessed-word">
         { guessedWord.map((letter, index) => (
-          <span key={index} className='letter'>{letter}</span>
+          <Card key={index} className='letter'>{letter}</Card>
         )) }
       </div>
       <div className='keyboard'>
-        { keyboard.map((letter, index) => (
-          <Button key={index} onPress={handleClick} className='key'>{letter}</Button>
+        { keyboard.map((key, index) => (
+          <Button
+            key={index}
+            onPress={() => handleClick(index)}
+            className='key'
+            disabled={key.used}
+          >
+            {key.letter}
+          </Button>
         )) }
       </div>
     </div>

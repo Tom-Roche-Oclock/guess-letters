@@ -32,3 +32,10 @@
   display: flex;
   gap: .5rem;
 }
+
+.guessed-word .letter {
+  background-color: transparent;
+  color: white;
+  width: fit-content;
+  text-align: center;
+}
