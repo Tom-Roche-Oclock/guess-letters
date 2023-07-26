@@ -4,9 +4,9 @@ import './App.css'
 
 // data 
 const words = [
-  'chat',
-  'chien',
-  'panda',
+  'renard',
+  'loup',
+  'blaireau',
   'biche',
   'ours',
 ];
@@ -43,7 +43,7 @@ function App() {
   // condition de victoire
   useEffect(() => {
     // vérifier si guessWord est complet
-    if (!guessedWord.includes('_')) {
+    if (!guessedWord.includes('_') && guessedWord.length > 0) {
       if (word.join('') === guessedWord.join('')) {
         console.log('Gagné !')
       } else {
