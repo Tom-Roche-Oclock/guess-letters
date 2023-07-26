@@ -54,17 +54,19 @@ function App() {
     
   }, [guessedWord])
 
-  const handleClick = (keyIndex) => {
+  const handleClick = (index) => {
     // inserer la lettre dans le guessedWord à la place du prochain _
     const newGuessedWord = [...guessedWord]
-    newGuessedWord[newGuessedWord.indexOf('_')] = keyboard[keyIndex].letter
+    newGuessedWord[newGuessedWord.indexOf('_')] = keyboard[index].letter
     setGuessedWord(newGuessedWord)
 
     // définir used à true sur la key concernée
     const newKeyboard = [...keyboard]
-    newKeyboard[keyIndex].used = true
+    newKeyboard[index].used = true
     setKeyboard(newKeyboard)
   }
+
+  const onPressHandler = index => () => handleClick(index)
 
   return (
     <div className="App">
@@ -81,7 +83,7 @@ function App() {
         { keyboard.map((key, index) => (
           <Button
             key={index}
-            onPress={() => handleClick(index)}
+            onPress={onPressHandler(index)}
             className='key'
             disabled={key.used}
           >
